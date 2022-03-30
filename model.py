@@ -26,6 +26,15 @@ class ChineseBERT(nn.Module):
         out = self.fc(self.dn(output))
         return out
 
+    def save_model(self, path):
+        torch.save(self, path)
+        print('Save successfully!')
+
+    def load_model(self, path):
+        model = torch.load(path)
+        print('Load successfully!')
+        return model
+
     def train_model(self, dataloader, epoch, criterion, optimizer, epoch_log):
         self.train()
         total_acc, total_count = 0, 0
