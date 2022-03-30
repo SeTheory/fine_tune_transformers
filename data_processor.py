@@ -92,14 +92,14 @@ class DataProcessor:
             processed_content, processed_pinyin = self.text_pipeline(_content)
             content_list.append(processed_content)
             pinyin_list.append(processed_pinyin)
-        return torch.cat(content_list, dim=0), torch.cat(pinyin_list, dim=0), torch.tensor(label_list, dtype=torch.int8)
+        return torch.cat(content_list, dim=0).long(), torch.cat(pinyin_list, dim=0).long(), torch.tensor(label_list, dtype=torch.int8)
 
     def get_dealt_text(self, text, pad_seq):
         tokens, pinyins = self.tokenizer.tokenize_sentence(text[:500])
         pinyins = pinyins.view(len(tokens), 8)
         if len(tokens) <= pad_seq:
-            tokens = torch.cat((tokens, torch.tensor([0]*(pad_seq - len(tokens)))))
-            pinyins = torch.cat((pinyins, torch.tensor([[0]*8]*(pad_seq - len(pinyins)))), dim=0)
+            tokens = torch.cat((tokens, torch.tensor([0]*(pad_seq - len(tokens)), dtype=torch.long)))
+            pinyins = torch.cat((pinyins, torch.tensor([[0]*8]*(pad_seq - len(pinyins)), dtype=torch.long)), dim=0)
         else:
             tokens = torch.cat((tokens[:pad_seq-1], torch.tensor([102])))
             pinyins = torch.cat((pinyins[:pad_seq-1], torch.tensor([[0]*8])), dim=0)
@@ -109,7 +109,7 @@ class DataProcessor:
 
 
 if __name__ == '__main__':
-    # dataProcessor = DataProcessor(0.7, 256)
+    dataProcessor = DataProcessor(0.7, 256)
     # dataProcessor.extract_data()
     # dataProcessor.split_data()
     # dataProcessor.get_dataloader(32)
@@ -120,13 +120,16 @@ if __name__ == '__main__':
     #         print(pinyin.shape)
     #         print(label.shape)
 
-    tokenizer = BertDataset('./bert/ChineseBERT-base/')
-    chinese_bert = GlyceBertModel.from_pretrained('./bert/ChineseBERT-base/')
+    # tokenizer = BertDataset('./bert/ChineseBERT-base/')
+    # chinese_bert = GlyceBertModel.from_pretrained('./bert/ChineseBERT-base/')
+    #
+    # input_ids, pinyin_ids = tokenizer.tokenize_sentence('我喜欢猫[PAD][PAD]')
+    # length = input_ids.shape[0]
+    # input_ids = input_ids.view(1, length)
+    # pinyin_ids = pinyin_ids.view(1, length, 8)
+    # output_hidden = chinese_bert.forward(input_ids, pinyin_ids)
+    # print(output_hidden[0].shape)
+    # print(output_hidden[1].shape)
 
-    input_ids, pinyin_ids = tokenizer.tokenize_sentence('我喜欢猫[PAD][PAD]')
-    length = input_ids.shape[0]
-    input_ids = input_ids.view(1, length)
-    pinyin_ids = pinyin_ids.view(1, length, 8)
-    output_hidden = chinese_bert.forward(input_ids, pinyin_ids)
-    print(output_hidden[0].shape)
-    print(output_hidden[1].shape)
+    string = '我爱学习'
+    print(dataProcessor.get_dealt_text(string, 256))
