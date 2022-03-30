@@ -31,7 +31,7 @@ class ChineseBERT(nn.Module):
         print('Save successfully!')
 
     def load_model(self, path):
-        model = torch.load(path)
+        model = torch.load(path, map_location=self.device)
         print('Load successfully!')
         return model
 
