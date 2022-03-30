@@ -50,7 +50,7 @@ class DataProcessor:
         ]
         data_result['val'] = [
             contents[int(self.rate * data_count): int((1 + self.rate) / 2 * data_count)],
-            labels[:int(self.rate * data_count): int((1 + self.rate) / 2 * data_count)]
+            labels[int(self.rate * data_count): int((1 + self.rate) / 2 * data_count)]
         ]
         data_result['test'] = [
             contents[int((1 + self.rate) / 2 * data_count):],
@@ -110,8 +110,12 @@ class DataProcessor:
 
 if __name__ == '__main__':
     dataProcessor = DataProcessor(0.7, 256)
-    # dataProcessor.extract_data()
-    # dataProcessor.split_data()
+    dataProcessor.extract_data()
+    dataProcessor.split_data()
+    train_contents, train_labels, \
+    val_contents, val_labels, \
+    test_contents, test_labels = dataProcessor.load_data()
+    print(val_labels)
     # dataProcessor.get_dataloader(32)
     # test = dataProcessor.dataloaders[2]
     # for idx, (content, pinyin, label) in enumerate(test):
@@ -131,5 +135,5 @@ if __name__ == '__main__':
     # print(output_hidden[0].shape)
     # print(output_hidden[1].shape)
 
-    string = '我爱学习'
-    print(dataProcessor.get_dealt_text(string, 256))
+    # string = '我爱学习'
+    # print(dataProcessor.get_dealt_text(string, 256))
